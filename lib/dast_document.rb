@@ -1,5 +1,4 @@
 require 'nokogiri'
-require 'byebug'
 
 class DastDocument
   def initialize; end
@@ -73,4 +72,3 @@ class DastDocument
     end
   end
 end
-
