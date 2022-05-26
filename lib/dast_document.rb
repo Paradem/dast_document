@@ -4,6 +4,8 @@ class DastDocument
   def initialize; end
 
   def self.walk(dast)
+    return "" unless dast&.value&.dig("document").present?
+    
     doc = Nokogiri::HTML::DocumentFragment.parse("")
     DastDocument.new.walk(doc, dast.value["document"]).to_html.html_safe
   end
