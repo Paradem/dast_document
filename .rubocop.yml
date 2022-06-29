@@ -1,5 +1,6 @@
 AllCops:
   TargetRubyVersion: 3.1.2
+  NewCops: enable
 
   Exclude:
     - .gitignore
@@ -17,3 +18,5 @@ AllCops:
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+Style/Documentation:
+  Enabled: false

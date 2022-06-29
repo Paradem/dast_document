@@ -1,12 +1,13 @@
-require 'nokogiri'
+# frozen_string_literal: true
+
+require "nokogiri"
 
 class DastDocument
-  def initialize; end
-
   def self.walk(dast)
     return "" unless dast&.value&.dig("document").present?
     
     doc = Nokogiri::HTML::DocumentFragment.parse("")
+    # @blocks = dast.blocks
     DastDocument.new.walk(doc, dast.value["document"]).to_html.html_safe
   end
 
@@ -19,8 +20,8 @@ class DastDocument
 
       if node["type"] == "blockquote"
         walk(html_node.first.children.first, node) if node["children"]&.any?
-      else
-        walk(html_node.first, node) if node["children"]&.any?
+      elsif node["children"]&.any?
+        walk(html_node.first, node)
       end
     end
     doc
@@ -30,12 +31,23 @@ class DastDocument
     case node["type"]
     when "paragraph" then build_node("p", node["value"])
     when "heading" then build_node("h#{node['level']}", node["value"])
-    when "list" then build_node("ul", node["value"])
+    when "list" then build_list(node)
     when "listItem" then build_node("li", node["value"])
     when "span" then build_node("span", node["value"], node["marks"])
     when "link" then build_a(node["url"])
     when "blockquote" then build_blockquote(node["attribution"])
+    when "thematicBreak" then build_node("hr", nil)
+    when "block" then poop_the_bed(node)
     end
+  end
+
+  def build_list(node)
+    tag = if node["style"] == "numbered"
+            "ol"
+          else
+            "ul"
+          end
+    build_node(tag, node["value"])
   end
 
   def children(dast_node); end
