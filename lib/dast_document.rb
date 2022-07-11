@@ -5,9 +5,8 @@ require "nokogiri"
 class DastDocument
   def self.walk(dast)
     return "" unless dast&.value&.dig("document").present?
-    
+
     doc = Nokogiri::HTML::DocumentFragment.parse("")
-    # @blocks = dast.blocks
     DastDocument.new.walk(doc, dast.value["document"]).to_html.html_safe
   end
 
@@ -37,7 +36,6 @@ class DastDocument
     when "link" then build_a(node["url"])
     when "blockquote" then build_blockquote(node["attribution"])
     when "thematicBreak" then build_node("hr", nil)
-    when "block" then poop_the_bed(node)
     end
   end
 
@@ -58,8 +56,8 @@ class DastDocument
 
   def build_blockquote(attribution)
     "<figure>" \
-      "<blockquote></blockquote>"\
-      "<figcaption>#{attribution}</figcaption>"\
+      "<blockquote></blockquote>" \
+      "<figcaption>#{attribution}</figcaption>" \
       "</figure>"
   end
 
