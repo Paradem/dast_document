@@ -7,7 +7,7 @@ class DastDocument
     return "" unless dast&.value&.dig("document").present?
 
     doc = Nokogiri::HTML::DocumentFragment.parse("")
-    DastDocument.new.walk(doc, dast.value["document"]).to_html.html_safe
+    DastDocument.new.walk(doc, dast.value["document"]).to_html.gsub("\n", "<br />").html_safe
   end
 
   def walk(doc, dast)
