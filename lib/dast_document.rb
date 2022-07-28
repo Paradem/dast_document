@@ -7,7 +7,7 @@ class DastDocument
     return "" unless dast&.value&.dig("document").present?
 
     doc = Nokogiri::HTML::DocumentFragment.parse("")
-    DastDocument.new.walk(doc, dast.value["document"]).to_html.gsub("\n", "<br />").html_safe
+    DastDocument.new.walk(doc, dast.value["document"]).to_html.html_safe
   end
 
   def walk(doc, dast)
@@ -62,7 +62,7 @@ class DastDocument
   end
 
   def build_node(tag_name, value, marks = nil)
-    "<#{tag_name}>#{markup(value, marks)}</#{tag_name}>"
+    "<#{tag_name}>#{markup(value&.gsub(/\n+/, '<br />'), marks)}</#{tag_name}>"
   end
 
   def markup(value, marks)
