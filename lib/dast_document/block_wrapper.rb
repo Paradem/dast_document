@@ -1,8 +1,8 @@
 module DastDocument
   class BlockWrapper
-    attr_reader :block
-    def initialize(block)
-      @block = block
+    attr_reader :content
+    def initialize(content)
+      @content = content
     end
 
     def nil?

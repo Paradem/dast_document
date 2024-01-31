@@ -64,7 +64,7 @@ module DastDocument
       return "<h3>Can't render block #{block.name} no view context</h3>" if @view_context.nil?
       return "<h3>Can't render block #{block.name} no component defined" unless component_defined?(block.component_name)
       component = @component_module.const_get(block.component_name)
-      component.new(resource: block).render_in(@view_context)
+      component.new(resource: block.content).render_in(@view_context)
     end
 
     def build_list(node)
