@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
-require "rake/testtask"
+require "bundler/gem_tasks"
+require "minitest/test_task"
 
-Rake::TestTask.new do |t|
+Minitest::TestTask.create(:test) do |t|
   t.libs << "test"
+  t.libs << "lib"
+  t.warning = false
+  t.test_globs = ["test/**/*_test.rb"]
 end
 
-desc "Run tests"
+require "standard/rake"
+
 task default: :test
