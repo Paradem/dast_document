@@ -6,15 +6,15 @@ module DastDocument
     end
 
     def nil?
-      @block.nil?
+      @content.nil?
     end
 
     def id
-      @block.id
+      @content&.id
     end
 
     def name
-      @block._model_api_key.split("_").map(&:capitalize).join
+      @content&._model_api_key&.split("_")&.map(&:capitalize)&.join
     end
 
     def component_name
