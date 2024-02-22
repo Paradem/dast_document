@@ -18,7 +18,7 @@ module DastDocument
     end
 
     def component_name
-      "#{name}Component"
+      name.to_s
     end
   end
 end
