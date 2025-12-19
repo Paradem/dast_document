@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Comprehensive edge case tests for DastDocument rendering:
+  - Empty documents, invalid node types, and missing data handling.
+  - Text formatting with multiple marks, unknown marks, and newlines.
+  - Advanced node types: blockquotes, links, unordered lists.
+  - Block rendering edge cases: multiple blocks, missing components/view contexts.
+  - HTML output validation via `to_html` method.
+
 ## [1.2.0] - 2024-02-22
 
 ### Added
