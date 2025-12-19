@@ -1,4 +1,32 @@
 module DastDocument
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  class Error < StandardError
+  end
+
+  class Document
+    def initialize: (untyped dast, ?view_context: untyped, ?component_module: Module) -> void
+    def to_html: -> String
+    def walk: -> untyped
+    def _walk: (untyped doc, untyped dast) -> untyped
+    def component_defined?: (String component) -> bool
+    def build_tag: (untyped node) -> untyped
+    def build_block: (String id) -> String
+    def build_list: (untyped node) -> String
+    def children: (untyped dast_node) -> void
+    def build_a: (String url) -> String
+    def build_blockquote: (String attribution) -> String
+    def build_node: (String tag_name, untyped value, ?untyped marks) -> String
+    def markup: (untyped value, untyped marks) -> untyped
+    def t: (String mark) -> String
+  end
+
+  class BlockWrapper
+    attr_reader content: untyped
+    def initialize: (untyped content) -> void
+    def nil?: -> bool
+    def id: -> untyped
+    def name: -> untyped
+    def component_name: -> String
+  end
 end

@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 module DastDocument
   class BlockWrapper
     attr_reader :content
+
     def initialize(content)
       @content = content
     end
