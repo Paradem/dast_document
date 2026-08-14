@@ -51,7 +51,7 @@ module DastDocument
       when "list" then build_list(node)
       when "listItem" then build_node("li", node["value"])
       when "span" then build_node("span", node["value"], node["marks"])
-      when "link" then build_a(node["url"])
+      when "link" then build_a(node)
       when "blockquote" then build_blockquote(node["attribution"])
       when "thematicBreak" then build_node("hr", nil)
       when "block" then build_block(node["item"])
@@ -79,8 +79,15 @@ module DastDocument
     def children(dast_node)
     end
 
-    def build_a(url)
-      "<a href=\"#{url}\"></a>"
+    def build_a(node)
+      url = node.is_a?(Hash) ? node["url"] : node
+      attrs = %(href="#{url}")
+      if node.is_a?(Hash)
+        attrs += %( target="#{node['target']}") if node["target"]
+        attrs += %( title="#{node['title']}")   if node["title"]
+        attrs += %( rel="noopener noreferrer")    if node["target"] == "_blank"
+      end
+      "<a #{attrs}></a>"
     end
 
     def build_blockquote(attribution)

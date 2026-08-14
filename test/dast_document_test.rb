@@ -79,4 +79,49 @@ class DastDocumentTest < Minitest::Test
     @document = DastDocument::Document.new(dast, component_module: Components, view_context: OpenStruct.new({})).walk
     assert_equal @document.css("h3").text, "Rendered"
   end
+
+  LINK_DOCUMENT =
+    {"schema" => "dast",
+     "document" =>
+      {"type" => "root",
+       "children" =>
+        [{"type" => "paragraph",
+          "children" =>
+           [{"type" => "link",
+             "url" => "https://example.com",
+             "target" => "_blank",
+             "title" => "hi",
+             "children" => [{"type" => "span", "value" => "link text"}]}]}]}}.freeze
+
+  LINK_NO_TARGET_DOCUMENT =
+    {"schema" => "dast",
+     "document" =>
+      {"type" => "root",
+       "children" =>
+        [{"type" => "paragraph",
+          "children" =>
+           [{"type" => "link",
+             "url" => "https://example.com",
+             "children" => [{"type" => "span", "value" => "same window"}]}]}]}}.freeze
+
+  def test_link_with_target
+    dast = OpenStruct.new(value: LINK_DOCUMENT, blocks: [])
+    document = DastDocument::Document.new(dast).walk
+    link = document.css("a").first
+    assert_equal "https://example.com", link["href"]
+    assert_equal "_blank", link["target"]
+    assert_equal "hi", link["title"]
+    assert_equal "noopener noreferrer", link["rel"]
+    assert_equal "link text", link.text
+  end
+
+  def test_link_without_target
+    dast = OpenStruct.new(value: LINK_NO_TARGET_DOCUMENT, blocks: [])
+    document = DastDocument::Document.new(dast).walk
+    link = document.css("a").first
+    assert_equal "https://example.com", link["href"]
+    assert_nil link["target"]
+    assert_nil link["rel"]
+    assert_equal "same window", link.text
+  end
 end
