@@ -83,11 +83,20 @@ module DastDocument
       url = node.is_a?(Hash) ? node["url"] : node
       attrs = %(href="#{url}")
       if node.is_a?(Hash)
-        attrs += %( target="#{node['target']}") if node["target"]
-        attrs += %( title="#{node['title']}")   if node["title"]
-        attrs += %( rel="noopener noreferrer")    if node["target"] == "_blank"
+        meta = link_meta(node)
+        attrs += %( target="#{meta['target']}") if meta["target"]
+        attrs += %( title="#{meta['title']}")   if meta["title"]
+        attrs += %( rel="#{meta['rel']}")        if meta["rel"]
+        attrs += %( rel="noopener noreferrer")    if meta["target"] == "_blank" && meta["rel"].nil?
       end
       "<a #{attrs}></a>"
+    end
+
+    def link_meta(node)
+      return {} unless node["meta"].is_a?(Array)
+      node["meta"].each_with_object({}) do |entry, hash|
+        hash[entry["id"]] = entry["value"] if entry["id"] && entry.key?("value")
+      end
     end
 
     def build_blockquote(attribution)

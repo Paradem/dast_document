@@ -89,8 +89,9 @@ class DastDocumentTest < Minitest::Test
           "children" =>
            [{"type" => "link",
              "url" => "https://example.com",
-             "target" => "_blank",
-             "title" => "hi",
+             "meta" =>
+              [{"id" => "target", "value" => "_blank"},
+               {"id" => "title", "value" => "hi"}],
              "children" => [{"type" => "span", "value" => "link text"}]}]}]}}.freeze
 
   LINK_NO_TARGET_DOCUMENT =
