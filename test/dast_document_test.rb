@@ -1,5 +1,6 @@
 require "test_helper"
 require "ostruct"
+require "json"
 
 class DastDocumentTest < Minitest::Test
   SAMPLE_DOCUMENT =
@@ -124,5 +125,20 @@ class DastDocumentTest < Minitest::Test
     assert_nil link["target"]
     assert_nil link["rel"]
     assert_equal "same window", link.text
+  end
+
+  def test_link_with_open_struct_document
+    # Cache layers (e.g. OpenStruct-backed DatoCMS records) deliver the DAST
+    # tree with OpenStruct nodes and symbol keys. Links must still render as
+    # real anchors, not stringify the whole node into the href.
+    value = JSON.parse(LINK_DOCUMENT.to_json, object_class: OpenStruct)
+    dast = OpenStruct.new(value: value, blocks: [])
+    document = DastDocument::Document.new(dast).walk
+    link = document.css("a").first
+    assert_equal "https://example.com", link["href"]
+    assert_equal "_blank", link["target"]
+    assert_equal "noopener noreferrer", link["rel"]
+    assert_equal "link text", link.text
+    refute_match(/OpenStruct/, document.to_html)
   end
 end

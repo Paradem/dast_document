@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "nokogiri"
+require "ostruct"
 
 module DastDocument
   class Document
@@ -9,9 +10,9 @@ module DastDocument
     end
 
     def initialize(dast, view_context: nil, component_module: Module)
-      @document = dast.value["document"]
+      @document = normalize(dast.value)["document"]
       @view_context = view_context
-      @blocks = dast.blocks
+      @blocks = Array(dast.blocks)
       @component_module = component_module
       @doc = Nokogiri::HTML::DocumentFragment.parse("")
     end
@@ -42,6 +43,20 @@ module DastDocument
 
     def component_defined?(component)
       @component_module.const_defined?(component)
+    end
+
+    # Cache layers (e.g. OpenStruct-backed DatoCMS records) may deliver the
+    # DAST value tree with OpenStruct nodes and symbol keys. Convert the tree
+    # to plain string-keyed Hashes so every node builder can rely on Hash#[].
+    # Blocks are intentionally left as-is: they are duck-typed (`.id`,
+    # `._model_api_key`) by BlockWrapper.
+    def normalize(value)
+      case value
+      when OpenStruct then value.to_h.transform_keys(&:to_s).transform_values { |v| normalize(v) }
+      when Hash then value.transform_keys(&:to_s).transform_values { |v| normalize(v) }
+      when Array then value.map { |v| normalize(v) }
+      else value
+      end
     end
 
     def build_tag(node)
@@ -128,5 +143,7 @@ module DastDocument
       else mark
       end
     end
+
+    private :normalize
   end
 end
