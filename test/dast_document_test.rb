@@ -63,7 +63,7 @@ class DastDocumentTest < Minitest::Test
   end
 
   module Components
-    class TextWithImageComponent
+    class TextWithImage
       def initialize(resource:)
         @resource = resource
       end
@@ -74,10 +74,16 @@ class DastDocumentTest < Minitest::Test
     end
   end
 
+  class ViewContext
+    def render(component)
+      component.render_in(self)
+    end
+  end
+
   def test_everything
     blocks = OpenStruct.new(id: "AS6rmJJ2Qpqs5woeo6C6SQ", text: "Amazing", _model_api_key: "text_with_image")
     dast = OpenStruct.new(value: SAMPLE_DOCUMENT, blocks: [blocks])
-    @document = DastDocument::Document.new(dast, component_module: Components, view_context: OpenStruct.new({})).walk
+    @document = DastDocument::Document.new(dast, component_module: Components, view_context: ViewContext.new).walk
     assert_equal @document.css("h3").text, "Rendered"
   end
 
@@ -92,7 +98,7 @@ class DastDocumentTest < Minitest::Test
              "url" => "https://example.com",
              "meta" =>
               [{"id" => "target", "value" => "_blank"},
-               {"id" => "title", "value" => "hi"}],
+                {"id" => "title", "value" => "hi"}],
              "children" => [{"type" => "span", "value" => "link text"}]}]}]}}.freeze
 
   LINK_NO_TARGET_DOCUMENT =

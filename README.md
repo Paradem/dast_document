@@ -1,8 +1,11 @@
 # DastDocument
 
-TODO: Delete this and the text below, and describe your gem
+Render DatoCMS structured-text (DAST) documents to HTML. The optional block
+registry provides an explicit, host-owned map from CMS block keys to renderer
+factories, with layout/container metadata and unknown-block policy.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/dast_document`. To experiment with that code, run `bin/console` for an interactive prompt.
+See [the block registry contract](docs/block-registry.md) for integration and
+limits.
 
 ## Installation
 
@@ -18,7 +21,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+DastDocument::Document.new(dast, view_context: view_context).walk
+```
+
+`dast` responds to `value` (the DAST envelope) and `blocks` (embedded block
+records). Pass `block_registry:` to use an explicit registry instead of the
+legacy component-module dispatch. The registry never constantizes CMS keys.
 
 ## Development
 

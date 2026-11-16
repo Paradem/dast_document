@@ -9,11 +9,12 @@ module DastDocument
       fail "this is no longer the API find the readme for usage"
     end
 
-    def initialize(dast, view_context: nil, component_module: Module)
+    def initialize(dast, view_context: nil, component_module: Module, block_registry: nil)
       @document = normalize(dast.value)["document"]
       @view_context = view_context
       @blocks = Array(dast.blocks)
       @component_module = component_module
+      @block_registry = block_registry
       @doc = Nokogiri::HTML::DocumentFragment.parse("")
     end
 
@@ -69,13 +70,18 @@ module DastDocument
       when "link" then build_a(node)
       when "blockquote" then build_blockquote(node["attribution"])
       when "thematicBreak" then build_node("hr", nil)
-      when "block" then build_block(node["item"])
+      when "block", "inlineBlock" then build_block(node["item"])
+      else "<h3>Unknown node type #{node["type"]}</h3>"
       end
     end
 
     def build_block(id)
-      block = @blocks.find { |block| block.id == id }.then { BlockWrapper.new(_1) }
-      return "<h3>Can't find the block that was defined fix your query</h3>" if block.nil?
+      content = @blocks.find { |block| block.id == id }
+      return "<h3>Can't find the block that was defined fix your query</h3>" if content.nil?
+
+      return @block_registry.render(content, context: @view_context) if @block_registry
+
+      block = BlockWrapper.new(content)
       return "<h3>Can't render block #{block.name} no view context</h3>" if @view_context.nil?
       return "<h3>Can't render block #{block.name} no component defined" unless component_defined?(block.component_name)
       component = @component_module.const_get(block.component_name)
@@ -99,10 +105,10 @@ module DastDocument
       attrs = %(href="#{url}")
       if node.is_a?(Hash)
         meta = link_meta(node)
-        attrs += %( target="#{meta['target']}") if meta["target"]
-        attrs += %( title="#{meta['title']}")   if meta["title"]
-        attrs += %( rel="#{meta['rel']}")        if meta["rel"]
-        attrs += %( rel="noopener noreferrer")    if meta["target"] == "_blank" && meta["rel"].nil?
+        attrs += %( target="#{meta["target"]}") if meta["target"]
+        attrs += %( title="#{meta["title"]}") if meta["title"]
+        attrs += %( rel="#{meta["rel"]}") if meta["rel"]
+        attrs += %( rel="noopener noreferrer") if meta["target"] == "_blank" && meta["rel"].nil?
       end
       "<a #{attrs}></a>"
     end
