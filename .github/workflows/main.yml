@@ -9,12 +9,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Ruby ${{ matrix.ruby }}
     strategy:
       matrix:
         ruby:
-          - '3.2.2'
+          - '3.2'
+          - '3.3'
+          - '3.4'
+          - '4.0'
 
     steps:
     - uses: actions/checkout@v4
@@ -25,3 +28,8 @@ jobs:
         bundler-cache: true
     - name: Run the default task
       run: bundle exec rake
+    - name: Lint
+      run: bundle exec standardrb
+    - name: Audit locked dependencies
+      if: matrix.ruby == '3.2'
+      run: bundle exec bundler-audit check --update
