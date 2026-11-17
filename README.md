@@ -1,11 +1,8 @@
 # DastDocument
 
-Render DatoCMS structured-text (DAST) documents to HTML. The optional block
-registry provides an explicit, host-owned map from CMS block keys to renderer
-factories, with layout/container metadata and unknown-block policy.
-
-See [the block registry contract](docs/block-registry.md) for integration and
-limits.
+Render DatoCMS structured-text (DAST) documents to HTML and dispatch embedded
+blocks into the host's own component module. Block classes and their markup are
+site-owned; there is no shared catalogue of block types.
 
 ## Installation
 
@@ -22,12 +19,20 @@ If bundler is not being used to manage dependencies, install the gem by executin
 ## Usage
 
 ```ruby
-DastDocument::Document.new(dast, view_context: view_context).walk
+DastDocument::Document.new(dast, component_module: Blocks, view_context: view_context).walk
 ```
 
-`dast` responds to `value` (the DAST envelope) and `blocks` (embedded block
-records). Pass `block_registry:` to use an explicit registry instead of the
-legacy component-module dispatch. The registry never constantizes CMS keys.
+`dast` responds to `value` (the DAST envelope) and `blocks` (embedded records).
+A CMS key such as `text_with_image` resolves to `Blocks::TextWithImage`, constructed
+with `resource: block`. Only constants defined directly in the supplied module
+are considered. Add a component to that module to support a new block; no
+registration table, shared block inventory or layout metadata is required.
+
+Each site supplies its own module, components and styling. Hosts with their own
+DAST walkers can retain their own constructor and rendering conventions.
+
+The optional [`block_registry:` prototype](docs/block-registry.md) remains for
+compatibility with its published API, but is not needed for module dispatch.
 
 ## Development
 

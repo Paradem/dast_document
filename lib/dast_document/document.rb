@@ -43,7 +43,7 @@ module DastDocument
     end
 
     def component_defined?(component)
-      @component_module.const_defined?(component)
+      component.match?(/\A[A-Z]\w*\z/) && @component_module.const_defined?(component, false)
     end
 
     # Cache layers (e.g. OpenStruct-backed DatoCMS records) may deliver the
@@ -84,7 +84,7 @@ module DastDocument
       block = BlockWrapper.new(content)
       return "<h3>Can't render block #{block.name} no view context</h3>" if @view_context.nil?
       return "<h3>Can't render block #{block.name} no component defined" unless component_defined?(block.component_name)
-      component = @component_module.const_get(block.component_name)
+      component = @component_module.const_get(block.component_name, false)
       @view_context.render(component.new(resource: block.content))
     end
 

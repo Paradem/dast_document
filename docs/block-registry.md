@@ -1,4 +1,9 @@
-# Block registry contract (foundation)
+# Optional block registry prototype (compatibility)
+
+The owner selected simple site-owned module dispatch on 2026-11-17. Prefer
+`Document.new(..., component_module: Blocks)` as described in the README; sites
+do not share block classes or maintain a common block catalogue. This optional
+prototype remains only to preserve the already-published `block_registry:` API.
 
 `DastDocument::BlockRegistry` is an explicit, host-owned mapping from CMS block
 keys and supported aliases to renderer factories. It is a foundation for
